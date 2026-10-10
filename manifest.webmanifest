@@ -1,0 +1,18 @@
+{
+  "name": "A220 Training Flashcards",
+  "short_name": "A220 Cards",
+  "description": "Breeze Airways A220 Limitations & Systems Flashcards",
+  "start_url": "./A220_Systems_Flashcards.html",
+  "display": "standalone",
+  "background_color": "#001a4d",
+  "theme_color": "#001a4d",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230033a0'/%3E%3Ctext x='50' y='62' font-size='36' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'%3EA220%3C/text%3E%3C/svg%3E",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

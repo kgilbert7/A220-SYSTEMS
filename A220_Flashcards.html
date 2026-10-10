@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#001a4d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="A220 Cards" />
+  <meta name="description" content="A220 Limitations Flashcards – Breeze Training" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>A220 Limitations Flashcards – Breeze Training</title>
+  <style>
+    :root {
+      --breeze-blue: #0033a0;
+      --breeze-accent: #00a3e0;
+      --bg: linear-gradient(160deg, #001a4d 0%, #0033a0 40%, #0055cc 100%);
+      --card-front-bg: #ffffff;
+      --card-front-text: #1a1a2e;
+      --card-back-bg: linear-gradient(145deg, #e8f0fe, #d0e4ff);
+      --card-back-text: #0033a0;
+      --card-shadow: 0 12px 30px rgba(0, 51, 160, 0.25);
+      --btn-nav-bg: #ffffff;
+      --btn-nav-text: #0033a0;
+      --btn-sec-bg: rgba(255,255,255,0.18);
+      --btn-sec-text: #fff;
+      --progress-bg: rgba(255,255,255,0.15);
+      --text: #ffffff;
+      --hint: rgba(255,255,255,0.7);
+    }
+
+    [data-theme="dark"] {
+      --bg: linear-gradient(160deg, #0a0a0f 0%, #12121a 50%, #1a1a2e 100%);
+      --card-front-bg: #1e1e2e;
+      --card-front-text: #e8e8f0;
+      --card-back-bg: linear-gradient(145deg, #252540, #1a1a30);
+      --card-back-text: #7eb8ff;
+      --card-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+      --btn-nav-bg: #2a2a40;
+      --btn-nav-text: #7eb8ff;
+      --btn-sec-bg: rgba(255,255,255,0.1);
+      --btn-sec-text: #ccc;
+      --progress-bg: rgba(255,255,255,0.1);
+      --text: #e0e0e8;
+      --hint: rgba(255,255,255,0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px 40px;
+      color: var(--text);
+      transition: background 0.3s ease;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 16px;
+      max-width: 640px;
+      width: 100%;
+      position: relative;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    header p {
+      opacity: 0.85;
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: var(--btn-sec-bg);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      transition: background 0.2s;
+    }
+
+    .theme-toggle:hover { background: rgba(255,255,255,0.25); }
+
+    .progress {
+      background: var(--progress-bg);
+      border-radius: 20px;
+      padding: 6px 18px;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+      backdrop-filter: blur(4px);
+    }
+
+    .progress span { font-weight: 700; }
+
+    .card-wrapper {
+      perspective: 1200px;
+      width: 100%;
+      max-width: 520px;
+      height: 360px;
+      margin-bottom: 24px;
+      cursor: pointer;
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+      border-radius: 18px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .card.flipped { transform: rotateY(180deg); }
+
+    .face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 28px 24px;
+      text-align: center;
+    }
+
+    .front {
+      background: var(--card-front-bg);
+      color: var(--card-front-text);
+    }
+
+    .back {
+      background: var(--card-back-bg);
+      color: var(--card-back-text);
+      transform: rotateY(180deg);
+    }
+
+    .label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      opacity: 0.55;
+      margin-bottom: 14px;
+    }
+
+    .content {
+      font-size: 1.1rem;
+      line-height: 1.45;
+      font-weight: 500;
+      max-height: 260px;
+      overflow-y: auto;
+      white-space: pre-line;
+    }
+
+    .back .content { font-size: 1.05rem; }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 520px;
+      width: 100%;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    button:active { transform: scale(0.96); }
+
+    .btn-nav {
+      background: var(--btn-nav-bg);
+      color: var(--btn-nav-text);
+      flex: 1;
+      min-width: 100px;
+      justify-content: center;
+    }
+
+    .btn-secondary {
+      background: var(--btn-sec-bg);
+      color: var(--btn-sec-text);
+      backdrop-filter: blur(4px);
+    }
+
+    .hint {
+      margin-top: 16px;
+      font-size: 0.8rem;
+      color: var(--hint);
+      text-align: center;
+      max-width: 400px;
+    }
+
+    .install-banner {
+      display: none;
+      background: rgba(0,163,224,0.2);
+      border: 1px solid var(--breeze-accent);
+      border-radius: 12px;
+      padding: 10px 16px;
+      margin-bottom: 16px;
+      font-size: 0.85rem;
+      text-align: center;
+      max-width: 520px;
+      width: 100%;
+    }
+
+    .install-banner button {
+      margin-top: 8px;
+      background: var(--breeze-accent);
+      color: #fff;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 480px) {
+      .card-wrapper { height: 320px; }
+      .content { font-size: 1.0rem; }
+      header h1 { font-size: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <button class="theme-toggle" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
+    <h1>A220 Limitations Flashcards</h1>
+    <p>Breeze Training Supplement – Pages 4–15</p>
+  </header>
+
+  <div class="install-banner" id="installBanner">
+    Install this app on your home screen for offline use
+    <br>
+    <button id="installBtn">Install App</button>
+  </div>
+
+  <div class="progress">
+    Card <span id="current">1</span> of <span id="total">0</span>
+  </div>
+
+  <div class="card-wrapper" id="cardWrapper" onclick="flipCard()">
+    <div class="card" id="card">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="content" id="question"></div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="content" id="answer"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn-nav" onclick="prevCard(event)">← Prev</button>
+    <button class="btn-nav" onclick="nextCard(event)">Next →</button>
+    <button class="btn-secondary" onclick="shuffleCards(event)">Shuffle</button>
+    <button class="btn-secondary" onclick="resetCards(event)">Reset</button>
+  </div>
+
+  <p class="hint">Tap card to flip • Arrow keys ← → • Space / F to flip • Works offline after install</p>
+
+  <script>
+    const cards = [
+      { q: "What is the Maximum Landing Gear Operating Speed (VLO) – Extension / Retraction?", a: "Extension: 250 KIAS\nRetraction: 220 KIAS" },
+      { q: "What is Maximum Landing Gear Extended Speed (VLE) and maximum gear operation altitude?", a: "VLE = 250 KIAS\nMax altitude = 20,000 ft" },
+      { q: "What are the Maximum Turbulence Penetration Speeds?", a: "≤ 10,000 ft → 265 KIAS\n> 10,000 ft → 280 KIAS or .75 Mach (whichever is lower)" },
+      { q: "What is the Tire Limit Speed?", a: "195 knots ground speed" },
+      { q: "Structural Weight Limits New:\nMax Ramp Weight,\nMax Takeoff Weight,\nMax Landing Weight,\nMax Zero Fuel Weight,\nMin Flight Weight", a: "MRW 157,000 lb\nMTOW 156,300 lb\nMLW 129,500 lb\nMZFW 123,000 lb\nMFW 80,000 lb\n\n(Post SB BD500-314004 / 324005 or Mods)" },
+      { q: "Structural Weight Limits Old:\nMax Ramp Weight,\nMax Takeoff Weight,\nMax Landing Weight,\nMax Zero Fuel Weight,\nMin Flight Weight", a: "MRW 150,000 lb\nMTOW 149,000 lb\nMLW 129,500 lb\nMZFW 123,000 lb\nMFW 80,000 lb\n\n(Note: A220-140 seat PAX will have reduced MRW/MTOW on initial EIS)" },
+      { q: "Taxi speed limits", a: "Straight Dry: 30 kt GS\nTurn Dry: 10 kt GS\nStraight Contaminated: 10 kt GS\nTurn Contaminated: 5 kt GS" },
+      { q: "When must Cowl Anti-Ice be ON on the ground?", a: "OAT ≤ 10 °C (50 °F) AND visible moisture present (fog ≤ 1 mile, rain, snow, sleet, ice crystals) OR operating on surfaces with snow/ice/standing water/slush.\n\nAlso ON for takeoff if icing conditions exist or are anticipated below 1,500 ft AGL." },
+      { q: "When must Wing Anti-Ice be selected ON for takeoff?", a: "OAT ≤ 5 °C (41 °F) AND visible moisture present OR runway contaminated with snow/ice/standing water/slush.\n\nAlso ON if icing conditions exist/anticipated below 1,500 ft AGL." },
+      { q: "In-flight icing definition and anti-ice requirements", a: "Icing conditions = TAT ≤ 10 °C (50 °F) AND visible moisture (except when SAT ≤ –40 °C).\n\nCowl and Wing Anti-Ice must be AUTO or ON when in icing conditions OR when ICE is annunciated." },
+      { q: "Wing Anti-Ice restrictions", a: "• Must be OFF at or above 35,000 ft\n• ON prohibited when TAT > 15 °C (59 °F)\n• Do NOT hold in icing conditions with flaps/slats extended" },
+      { q: "Super-cooled Large Droplet (SLD) icing", a: "Continued operation prohibited.\nIndicated by ice accretion on flight-deck side windows.\nBoth Wing AND Cowl Anti-Ice must be ON.\nLeave icing conditions when side-window icing occurs." },
+      { q: "Engine Ice Shedding – Ground", a: "OAT ≤ 3 °C (37 °F) AND visible moisture → run engines momentarily to ≥ 60 % N1 at intervals ≤ 30 min.\nFirst run-up as soon as practical." },
+      { q: "Speed correction for approach/landing in icing with Flap 5", a: "Increase VREF, VAC and VGA by +5 KIAS\n(CAFM already includes this when “ice accumulation = YES”)" },
+      { q: "Airplane Cold Soak requirement", a: "Ambient ≤ –20 °C (–4 °F) for > 8 hours → cycle thrust reversers a minimum of 2 times before takeoff on wet/contaminated runway." },
+      { q: "Maximum continuous AC generator load", a: "75 kVA" },
+      { q: "Maximum continuous DC loads (TRUs)", a: "TRU 1 & 2 = 350 Amps\nTRU 3 = 225 Amps (125 Amps reserved for FBW)" },
+      { q: "Landing Crosswind Limits (including gusts)", a: "RWY Condition Code:\n6 → 29 kt\n5 → 29 kt\n4 → 20 kt\n3 → 15 kt\n2 → 10 kt\n1 → 8 kt" },
+      { q: "Takeoff Crosswind Limits (selected values)", a: "Dry → 32 kt\nFrost → 31 kt\nWet / ≤ 3 mm slush/snow → 20–31 kt range\nCompacted snow (≤ –15 °C) → 20 kt\n“Slippery when wet” → 18 kt\n> 3 mm water/slush → 10 kt\nIce → 10 kt\nWet ice → Operations Prohibited" },
+      { q: "Maximum Breeze Tailwind component for takeoff & landing", a: "10 knots\n(15-knot exemption possible only under specific altitude / flap / systems limitations)" },
+      { q: "Autopilot minimum heights", a: "Engagement: 400 ft AGL\nUse: 80 ft AGL" },
+      { q: "Autothrottle limitations on approach/landing and takeoff", a: "• Approach/landing with A/T → increase approach speed +5 kt\n• After thrust levers advanced for takeoff, do NOT select/re-select A/T until ≥ 400 ft AGL\n  (risk of premature rotation / tail-strike)" },
+      { q: "APU (Honeywell 131-9C) key limits:\nMin. Oil Temp?\n# of start attempts in 1 hour?\nHow long of a delay between start attempts?", a: "• Min oil temp for start: –40 °C\n• Max 3 start attempts per hour, 2-minute delay between attempts\n• APU bleed air extraction altitude limit: 23,000 ft\n• APU bleed must be OFF for takeoff when OAT ≤ 15 °C" },
+      { q: "Maximum usable fuel quantities", a: "Left / Right Main: 6,725 lb each (996 US gal)\nCenter: 24,900 lb (3,689 US gal)\nTotal: 38,350 lb (5,681 US gal)\n\nMax imbalance L/R: 1,000 lb" },
+      { q: "Fuel temperature limits", a: "Max bulk fuel temp for start/ops: 52.5 °C (126.6 °F)\nTakeoff prohibited with bulk fuel temp < –37 °C (–35 °F)" },
+      { q: "Minimum fuel for go-around", a: "975 lb per wing (airplane level) at max 10° nose-up attitude" },
+      { q: "Slats/Flaps maximum altitude extended", a: "20,000 ft" },
+      { q: "Flight Spoilers limits", a: "• Min height for manual extension: 500 ft AGL\n• Min speed for manual extension: VREF + 10 KIAS\n• MAX spoilers only for emergencies (report any MAX use to maintenance)" },
+      { q: "Engine start limits on ground", a: "• Max crosswind 43 kt Max tailwind 18 kt\n• After 3 start attempts OR 4 min continuous cranking → 30-min cooling\n• Do not engage starter if N2 > 20 %" },
+      { q: "Engine warm-up N1 limits by oil temperature", a: "< –40 °C → Start prohibited\n< –6 °C → Idle only\n–6 °C to 21 °C → 30 % N1\n21 °C to 49 °C → 50 % N1\n≥ 49 °C → No limit" },
+      { q: "Engine cooldown before shutdown", a: "≥ 5 min at or near idle (cumulative).\nLast flight of the day may be reduced to 3 min.\nTaxi time at ≤ 40 % N1 counts; any time above 40 % N1 must be matched with additional cooldown." },
+      { q: "Thrust Reverser restrictions", a: "Ground use only.\nActivation in flight prohibited.\nBacking up prohibited.\nGo-around / touch-and-go prohibited after deployment." },
+      { q: "One thrust reverser inoperative – crosswind limit", a: "Max crosswind for takeoff/landing on wet runway = 25 kt" },
+      { q: "Breeze Flap Extended Speeds (VFE) – company limits", a: "Flap 1 → 220 KIAS\nFlap 2 → 200 KIAS\nFlap 3 → 200 KIAS\nFlap 4 → 180 KIAS\nFlap 5 → 160 KIAS\n\n(These are more restrictive than the AFM to reduce overspeeds)" },
+      { q: "Windshield Wiper max operating speed", a: "250 KIAS" },
+      { q: "Altitude & Temperature Operating Limits", a: "Max airport pressure altitude T/O & Landing: 8,000 ft\nMax operating altitude: 41,000 ft\nMax ambient temp T/O & Landing: 52.5 °C (126.5 °F)\nMin ambient temp T/O & Landing: –54 °C (–65 °F)" },
+      { q: "Maneuvering Limit Load Factors", a: "Flaps Up: –1.0 g to +2.5 g\nFlaps Down: 0.0 g to +2.0 g" },
+      { q: "Maximum runway slope", a: "± 2 %" },
+      { q: "Pressurization differentials", a: "Max positive: 8.8 psid\nMax negative: –0.5 psid\nAt touchdown (initial landing): ≤ 1.0 psid" },
+      { q: "Passenger / Cargo Door wind limits", a: "Operation: 40 kt\nHeld open: 65 kt" }
+    ];
+
+    let currentIndex = 0;
+    let isFlipped = false;
+    let order = [...Array(cards.length).keys()];
+
+    const cardEl = document.getElementById("card");
+    const questionEl = document.getElementById("question");
+    const answerEl = document.getElementById("answer");
+    const currentEl = document.getElementById("current");
+    const totalEl = document.getElementById("total");
+    const themeToggle = document.getElementById("themeToggle");
+
+    totalEl.textContent = cards.length;
+
+    // Theme
+    function setTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      themeToggle.textContent = theme === "dark" ? "☀️" : "🌙";
+      localStorage.setItem("a220-theme", theme);
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.content = theme === "dark" ? "#0a0a0f" : "#001a4d";
+    }
+
+    const savedTheme = localStorage.getItem("a220-theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    setTheme(savedTheme);
+
+    themeToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const current = document.documentElement.getAttribute("data-theme");
+      setTheme(current === "dark" ? "light" : "dark");
+    });
+
+    function showCard() {
+      const idx = order[currentIndex];
+      questionEl.textContent = cards[idx].q;
+      answerEl.textContent = cards[idx].a;
+      currentEl.textContent = currentIndex + 1;
+      isFlipped = false;
+      cardEl.classList.remove("flipped");
+    }
+
+    function flipCard() {
+      isFlipped = !isFlipped;
+      cardEl.classList.toggle("flipped", isFlipped);
+    }
+
+    function nextCard(e) {
+      if (e) e.stopPropagation();
+      currentIndex = (currentIndex + 1) % cards.length;
+      showCard();
+    }
+
+    function prevCard(e) {
+      if (e) e.stopPropagation();
+      currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+      showCard();
+    }
+
+    function shuffleCards(e) {
+      if (e) e.stopPropagation();
+      for (let i = order.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [order[i], order[j]] = [order[j], order[i]];
+      }
+      currentIndex = 0;
+      showCard();
+    }
+
+    function resetCards(e) {
+      if (e) e.stopPropagation();
+      order = [...Array(cards.length).keys()];
+      currentIndex = 0;
+      showCard();
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") { e.preventDefault(); nextCard(); }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); prevCard(); }
+      else if (e.key === " " || e.key === "f" || e.key === "F") { e.preventDefault(); flipCard(); }
+    });
+
+    // PWA install prompt
+    let deferredPrompt;
+    const installBanner = document.getElementById("installBanner");
+    const installBtn = document.getElementById("installBtn");
+
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBanner.style.display = "block";
+    });
+
+    installBtn.addEventListener("click", async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      installBanner.style.display = "none";
+    });
+
+    // Register service worker
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    }
+
+    showCard();
+  </script>
+</body>
+</html>

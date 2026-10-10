@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#001a4d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="A220 Systems" />
+  <meta name="description" content="A220 Systems Study Guide Flashcards – Breeze Training Oral Prep" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <title>A220 Systems Flashcards – Breeze Training</title>
+  <style>
+    :root {
+      --breeze-blue: #0033a0;
+      --breeze-accent: #00a3e0;
+      --bg: linear-gradient(160deg, #001a4d 0%, #0033a0 40%, #0055cc 100%);
+      --card-front-bg: #ffffff;
+      --card-front-text: #1a1a2e;
+      --card-back-bg: linear-gradient(145deg, #e8f0fe, #d0e4ff);
+      --card-back-text: #0033a0;
+      --card-shadow: 0 12px 30px rgba(0, 51, 160, 0.25);
+      --btn-nav-bg: #ffffff;
+      --btn-nav-text: #0033a0;
+      --btn-sec-bg: rgba(255,255,255,0.18);
+      --btn-sec-text: #fff;
+      --progress-bg: rgba(255,255,255,0.15);
+      --text: #ffffff;
+      --hint: rgba(255,255,255,0.7);
+      --menu-bg: rgba(255,255,255,0.12);
+    }
+    [data-theme="dark"] {
+      --bg: linear-gradient(160deg, #0a0a0f 0%, #12121a 50%, #1a1a2e 100%);
+      --card-front-bg: #1e1e2e;
+      --card-front-text: #e8e8f0;
+      --card-back-bg: linear-gradient(145deg, #252540, #1a1a30);
+      --card-back-text: #7eb8ff;
+      --card-shadow: 0 12px 30px rgba(0,0,0,0.5);
+      --btn-nav-bg: #2a2a40;
+      --btn-nav-text: #7eb8ff;
+      --btn-sec-bg: rgba(255,255,255,0.1);
+      --btn-sec-text: #ccc;
+      --progress-bg: rgba(255,255,255,0.1);
+      --text: #e0e0e8;
+      --hint: rgba(255,255,255,0.5);
+      --menu-bg: rgba(255,255,255,0.08);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      min-height: 100vh; min-height: 100dvh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 16px 12px 40px; color: var(--text); transition: background 0.3s;
+    }
+    header { text-align: center; margin-bottom: 12px; max-width: 640px; width: 100%; position: relative; }
+    header h1 { font-size: 1.35rem; font-weight: 700; }
+    header p { opacity: 0.85; font-size: 0.85rem; margin-top: 4px; }
+    .theme-toggle {
+      position: absolute; top: 0; right: 0; background: var(--btn-sec-bg);
+      border: none; border-radius: 50%; width: 38px; height: 38px; font-size: 1.15rem;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text);
+    }
+    .menu-btn {
+      position: absolute; top: 0; left: 0; background: var(--btn-sec-bg);
+      border: none; border-radius: 10px; padding: 8px 12px; font-size: 0.85rem;
+      cursor: pointer; color: var(--text); font-weight: 600;
+    }
+    .section-menu {
+      display: none; flex-wrap: wrap; gap: 8px; justify-content: center;
+      max-width: 560px; width: 100%; margin-bottom: 16px;
+    }
+    .section-menu.open { display: flex; }
+    .section-btn {
+      background: var(--menu-bg); border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px; padding: 8px 12px; font-size: 0.8rem; font-weight: 600;
+      color: var(--text); cursor: pointer; transition: background 0.2s;
+    }
+    .section-btn.active, .section-btn:hover { background: var(--breeze-accent); color: #fff; border-color: transparent; }
+    .progress {
+      background: var(--progress-bg); border-radius: 20px; padding: 5px 16px;
+      font-size: 0.9rem; margin-bottom: 16px; backdrop-filter: blur(4px);
+    }
+    .progress span { font-weight: 700; }
+    .section-label {
+      font-size: 0.75rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 1px; opacity: 0.7; margin-bottom: 8px;
+    }
+    .card-wrapper {
+      perspective: 1200px; width: 100%; max-width: 520px; height: 340px;
+      margin-bottom: 20px; cursor: pointer;
+    }
+    .card {
+      width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
+      transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+      border-radius: 18px; box-shadow: var(--card-shadow);
+    }
+    .card.flipped { transform: rotateY(180deg); }
+    .face {
+      position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+      border-radius: 18px; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; padding: 24px 20px; text-align: center;
+    }
+    .front { background: var(--card-front-bg); color: var(--card-front-text); }
+    .back { background: var(--card-back-bg); color: var(--card-back-text); transform: rotateY(180deg); }
+    .label { font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; opacity: 0.5; margin-bottom: 12px; }
+    .content { font-size: 1.05rem; line-height: 1.45; font-weight: 500; max-height: 250px; overflow-y: auto; white-space: pre-line; }
+    .back .content { font-size: 0.98rem; }
+    .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 520px; width: 100%; }
+    button {
+      border: none; border-radius: 12px; padding: 11px 16px; font-size: 0.88rem;
+      font-weight: 600; cursor: pointer; transition: transform 0.15s, background 0.2s;
+      display: flex; align-items: center; gap: 5px;
+    }
+    button:active { transform: scale(0.96); }
+    .btn-nav { background: var(--btn-nav-bg); color: var(--btn-nav-text); flex: 1; min-width: 90px; justify-content: center; }
+    .btn-secondary { background: var(--btn-sec-bg); color: var(--btn-sec-text); backdrop-filter: blur(4px); }
+    .hint { margin-top: 14px; font-size: 0.78rem; color: var(--hint); text-align: center; max-width: 400px; }
+    .install-banner {
+      display: none;
+      background: rgba(0,163,224,0.2);
+      border: 1px solid var(--breeze-accent);
+      border-radius: 12px;
+      padding: 10px 16px;
+      margin-bottom: 14px;
+      font-size: 0.85rem;
+      text-align: center;
+      max-width: 520px;
+      width: 100%;
+    }
+    .install-banner button {
+      margin-top: 8px;
+      background: var(--breeze-accent);
+      color: #fff;
+      padding: 8px 16px;
+      font-size: 0.85rem;
+    }
+    @media (max-width: 480px) {
+      .card-wrapper { height: 300px; }
+      .content { font-size: 0.95rem; }
+      header h1 { font-size: 1.15rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <button class="menu-btn" id="menuBtn" onclick="toggleMenu()">☰ Systems</button>
+    <button class="theme-toggle" id="themeToggle" title="Toggle dark mode">🌙</button>
+    <h1>A220 Systems Flashcards</h1>
+    <p>Breeze Training – Oral Prep (Pages 17–74)</p>
+  </header>
+
+  <div class="install-banner" id="installBanner">
+    Install this app on your home screen for offline use
+    <br>
+    <button id="installBtn">Install App</button>
+  </div>
+
+  <div class="section-menu" id="sectionMenu"></div>
+
+  <div class="section-label" id="sectionLabel">All Systems</div>
+  <div class="progress">Card <span id="current">1</span> of <span id="total">0</span></div>
+
+  <div class="card-wrapper" id="cardWrapper" onclick="flipCard()">
+    <div class="card" id="card">
+      <div class="face front">
+        <div class="label">Question</div>
+        <div class="content" id="question"></div>
+      </div>
+      <div class="face back">
+        <div class="label">Answer</div>
+        <div class="content" id="answer"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn-nav" onclick="prevCard(event)">← Prev</button>
+    <button class="btn-nav" onclick="nextCard(event)">Next →</button>
+    <button class="btn-secondary" onclick="shuffleCards(event)">Shuffle</button>
+    <button class="btn-secondary" onclick="resetCards(event)">Reset</button>
+  </div>
+
+  <p class="hint">Tap card to flip • ← → arrows • Space/F to flip • ☰ to switch systems</p>
+
+  <script>
+    const decks = {
+      "AFCS": [
+        { q: "What are PFCCs and what do they do?", a: "Primary Flight Control Computers – operate the Fly-By-Wire system. Receive commands from flight deck controls (via IIMs) or autopilot/FD. Issue commands to move flight control surfaces and provide flight envelope & structural protection." },
+        { q: "How many total PFCCs? How many active at a time? How many required for Normal Mode?", a: "3 total\n1 active at a time\n1 required for Normal Mode\n(The active PFCC is auto-selected at power-up; no way to determine which is in use in normal mode)" },
+        { q: "AT and FD functionality are provided by which computers? How many?", a: "DMCs – Data Concentrator Unit (DCU) Module Cabinets\n2 (Left and Right), each with dual channels A and B" },
+        { q: "How is the selection of the active DMC determined?", a: "• Automatically alternates on a daily basis (odd/even days)\n• If active DMC fails in flight → auto selects the other\n• FD/AT ALTN switch manually selects the standby AFCS" },
+        { q: "What are the two basic modes?", a: "HDG and FPA" },
+        { q: "What is the purpose of the XFR switch on the glareshield?", a: "Selects which channel (A or B) in the DMC will supply flight guidance\nAlso determines the master FMS" },
+        { q: "How is the Flight Director represented on the PFD? How is the Flight Path Vector represented?", a: "FD: Small magenta circle with lateral bars\nFPV: Slightly larger green circle with lateral bars and a vertical bar" },
+        { q: "Where should confirmation of any active mode be made?", a: "On the FMA (Flight Mode Annunciator)" },
+        { q: "Minimum altitude for AP engagement? For AP use?", a: "Engagement: 400 ft AGL\nUse: 80 ft AGL" },
+        { q: "What is Half Bank Mode? When is it automatically activated?", a: "Limits max bank angle used by FD to 15° (normally 30°)\nAvailable in HDG mode only (not NAV)\nAuto-activated when aircraft climbs through 31,500 ft" },
+        { q: "How can the autopilot be disengaged manually?", a: "• Red AP/PTY switch on sidestick\n• AP pushbutton on FCP\n• Pitch trim switch on sidestick\n• Moving the sidestick\n• Tiller/rudder pedals during Autoland ground roll\n• TOGA > 2 sec on ground (except Autoland ROLLOUT)" },
+        { q: "When do autothrottles engage on the ground? In the air?", a: "Ground: Thrust levers past 23° TLA\nAir: AT switch / TOGA / EDM / Go-Around / Windshear escape" },
+        { q: "What are the Autothrottle operating modes?", a: "HOLD, SPD, THRUST, EDM, USPD, LIM (amber), RETARD" },
+        { q: "Describe THRUST mode vs SPD mode", a: "THRUST: AT controls N1 based on phase of flight; aircraft pitches to maintain speed\nSPD: AT maintains selected IAS/Mach from FCP or FMS" },
+        { q: "AT operates in takeoff HOLD mode from ___ to ___. RETARD activates at approximately ___ ft RA.", a: "HOLD: 60 kt to 400 ft RA\nRETARD: ~30 ft RA" },
+        { q: "After touchdown, when do autothrottles auto-disengage? Does the aural alert sound?", a: "2 seconds after main wheel touchdown\nNo aural alert" },
+        { q: "The FMA is divided into five sections (L to R). What are they?", a: "1. AT mode\n2. Lateral modes\n3. Autopilot / Autothrottle\n4. Vertical mode\n5. Alternate Data Source" },
+        { q: "When does Emergency Descent Mode (EDM) automatically activate?", a: "Cabin altitude > 14,500 ft AND aircraft altitude > 25,000 ft" },
+        { q: "What happens when EDM activates automatically?", a: "• EDM button illuminates\n• AP & AT engage (if not already)\n• “Emergency Descent” aural\n• EMERGENCY DESCENT warning on EICAS\n• Pax O2 masks deploy\n• Seat belt signs on\n• Transponder 7700\n• Thrust levers → IDLE\n• Descends to 15,000 ft at VMO–10 / MMO–.02\n• Maintains current HDG" },
+        { q: "What is different when EDM is activated manually?", a: "• Transponder code NOT changed\n• EICAS message is amber (not red)\n• Seatbelt sign does NOT illuminate automatically" }
+      ],
+      "Air / Bleed / Press": [
+        { q: "What does IAMS stand for? What are its 5 components?", a: "Integrated Air Management System\n1. Bleed Air System\n2. BALODS (Bleed Air Leak and Overheat Detection System)\n3. Air Conditioning System\n4. Avionics cooling & heat extraction\n5. Pressurization System" },
+        { q: "What manages IAMS? How many IASCs? How many channels each?", a: "Integrated Air System Controllers (IASCs)\n2 IASCs\n3 channels each (A, B, and safety channel C)" },
+        { q: "What stages of bleed air are used for bleed/AC/pressurization? For cowl anti-ice?", a: "Bleed/AC/Press: 4th and 8th stages\nCowl anti-ice: 6th stage\n(IASC selects based on thrust setting and pneumatic demand)" },
+        { q: "What does BALODS protect by detecting leaks in?", a: "Bleed air, Wing anti-ice, Air conditioning packs, Trim air, APU bleed" },
+        { q: "How does BALODS monitor the systems?", a: "Dual-loop system\nDual independent heat detection loops – both must detect a leak to trigger alert" },
+        { q: "What are the two flow modes?", a: "Automatic: airflow adjusted by IASCs based on cabin occupants entered in FMS (assumes full if no data)\nHigh" },
+        { q: "What is the purpose of the TRIM air system? How many temperature zones?", a: "Supplies additional hot bleed air through 4 Trim Air Valves (TAV), mixed with cold pack air\n4 temperature-controlled zones" },
+        { q: "What percentage of air is recirculated?", a: "35–40%" },
+        { q: "Purpose of the RAM AIR valve? Purpose of the outflow valve?", a: "RAM AIR: Emergency ventilation to cabin/cockpit at low altitude if both PACKs fail\nOutflow valve: Controls pressurization and outflow of cabin air" },
+        { q: "At what cabin altitude do pax oxygen masks deploy?", a: "14,500 ft" },
+        { q: "Main components of the pressurization system?", a: "Outflow Valve – 1\nSafety Valves – 2\nNegative Pressure Relief Valve – 1\nPressure Equalization Valves – 4" },
+        { q: "What are the two pressurization modes?", a: "Automatic: IASCs maintain pressure altitude on FMS profile schedule\nManual: IASCs maintain rate set by flight crew" },
+        { q: "When APU and engine bleeds are both available, when does IASC use engine bleed?", a: "• Wing anti-ice active/ON\n• Aircraft in flight and clean config\n• Aircraft above 16,500 ft\n(Otherwise uses APU bleed if available)" }
+      ],
+      "APU": [
+        { q: "What type of APU? What systems does it support?", a: "Honeywell 131-9C – gas turbine, 2-stage axial flow\nProvides alternate AC electrical power and bleed air for engine starting and air conditioning" },
+        { q: "Where are APU indications displayed?", a: "STATUS page & AIR, ELEC, and FUEL synoptic pages" },
+        { q: "What happens if APU BIT fails?", a: "FAIL light on APU panel illuminates\nAPU FAULT advisory on EICAS" },
+        { q: "How is the APU inlet door controlled? Positions? Where shown?", a: "By the APU ECU\nFully open / intermediate / fully closed\nShown on STATUS page" },
+        { q: "APU generator power output?", a: "115 Vac, 400 Hz, 75 kVA\nDegrades linearly from FL365 to 58 kVA at FL410" },
+        { q: "At what % RPM is APU ready for electrical and pneumatic loading?", a: "95%" },
+        { q: "How many APU starts per hour? Delay between starts?", a: "Max 3 attempts in one hour\n2-minute delay between starts" },
+        { q: "What happens when APU switch selected to START?", a: "BIT → Inlet door opens → Fuel SOV opens → L fuel boost pump on (if AC avail) → Start sequence" },
+        { q: "What happens when APU switch selected OFF?", a: "ECU starts a 60-second cool-down period, then shuts down APU and closes inlet door" },
+        { q: "Will an APU FIRE in flight cause automatic shutdown?", a: "No (only on the ground)" },
+        { q: "Two external APU shutoff switches?", a: "1. Guarded APU SHUTOFF on external service panel\n2. Shutdown switch in the APU compartment" },
+        { q: "How does the APU get fuel?", a: "Left engine fuel line through APU SOV\n• L main engine fuel ejector if L ENG ON\n• Either AC boost pump if AC available\n• Suction feed if no AC and L ENG off" },
+        { q: "Before turning off batteries with APU running (Power Off checklist), what two conditions must be met?", a: "APU inlet door closed\nRPM 0%\n(Otherwise 15-min wait next morning for reset)" },
+        { q: "Min oil temperature for APU start? Altitude limit for bleed air extraction?", a: "Min oil temp: –40 °C\nBleed air extraction limit: 23,000 ft" },
+        { q: "When does APU IN START change to APU ON?", a: "When RPM is between 91% and 100%" }
+      ],
+      "Communications": [
+        { q: "When does open microphone protection terminate on VHF? What happens at 25 seconds?", a: "Terminates after 30 seconds of continuous transmission\nAt 25 seconds: 5 beeps are heard" },
+        { q: "Can VHF 3 operate in voice or data modes?", a: "Yes – both" },
+        { q: "How is an emergency call to the cabin initiated?", a: "Press and hold CAB transmit pushbutton for more than 3 seconds, then release" },
+        { q: "Pushing MECH CALL switch causes?", a: "A horn to sound in the nose landing gear area" },
+        { q: "What coms is the aircraft equipped with?", a: "3 VHF\n2 HF (first 5 tails) / 1 HF (rest of fleet)\nSATCOM" },
+        { q: "All coms antennas are located ___ of the fuselage except ___ which is below.", a: "On top\nCOM 2" },
+        { q: "How many Audio Control Panels (ACPs)? Where are PTT pushbuttons?", a: "3 ACPs\nPTT on: ACPs, handheld mics, sidesticks, Cursor Control Panels" },
+        { q: "What does CNS stand for?", a: "Communication, Navigation and Surveillance" },
+        { q: "To transmit on PA, the PA button must be ___ .", a: "Held" },
+        { q: "Incoming cabin call indications?", a: "Cabin call message on EICAS\nHi-low chime" },
+        { q: "VHF 3 is primarily used for? When no VHF coverage, datalink switches to?", a: "Datalink coms (must be in DATA mode)\nSATCOM" }
+      ],
+      "Doors": [
+        { q: "Passenger doors? Service doors? Total external doors?", a: "Passenger: L1 and L2\nService: R1 and R2\nTotal external doors: 12" },
+        { q: "What is the Flight Deck Remote Access System (FDRAS)?", a: "Keypad in the galley used to access and signal the flight deck" },
+        { q: "After pressing DENY on cockpit door panel, how long is the door locked?", a: "30 minutes" },
+        { q: "If emergency access is not accepted/denied within ___ seconds, the door auto-unlocks for ___ seconds.", a: "30 seconds → unlocks for 5 seconds" },
+        { q: "Which computers monitor door proximity sensors?", a: "LGSCUs (Landing Gear Steering Control Units)" },
+        { q: "Each passenger/service door has three visual indicators. What are they?", a: "1. Mechanical locking indicator (Locked=Green, Unlocked=Red)\n2. Differential pressure indicator (flashes Red if ΔP too high – do not open)\n3. Slide arming indicator (UP=Disarmed=Green, DOWN=Armed=Red)" },
+        { q: "Can the flight crew emergency exit hatch be opened from both inside and outside?", a: "Yes, both" },
+        { q: "Reinforced flight deck door decompression panel opens when ΔP exceeds?", a: "0.8 psi" },
+        { q: "Where is the LRBL (Least Risk Bomb Location)?", a: "Center of R2 Cabin Door\n(Location most capable of sustaining an explosion with least damage to the airplane)" }
+      ],
+      "Electrical": [
+        { q: "The aircraft uses ___ VAC and ___ VDC electrical power.", a: "115 VAC\n28 VDC" },
+        { q: "What are the AC electrical sources?", a: "2 Variable Frequency Generators (VFGs)\n1 APU VFG\nRAT\nExternal power" },
+        { q: "What are the 3 AC busses?", a: "AC BUS 1\nAC BUS 2\nAC ESS BUS" },
+        { q: "What are the DC power sources?", a: "3 TRUs\n2 NiCad batteries\n2 Permanent Magnet Alternator Generators (PMAGs)" },
+        { q: "How many DC busses? How many shown on ELEC synoptic?", a: "8 total\n6 displayed (BAT DIR BUSSES 1 & 2 are not shown)" },
+        { q: "What is an EPC? How many? Function?", a: "Electrical Power Centers\n3 (EPC 1, 2, 3)\nPower isolation and distribution" },
+        { q: "What do the PMAGs provide power for?", a: "FADEC\nFly-by-Wire Power Converter (FBWPC)" },
+        { q: "VFG kVA rating? Location?", a: "75 kVA\nAccessory gearbox" },
+        { q: "When does the RAT deploy automatically? Rating? Min airspeed?", a: "Complete loss of AC power in flight\n10 kVA\n148 kts for electrical power" },
+        { q: "What busses does the RAT power?", a: "AC ESS BUS\nDC ESS BUS via TRU 3" },
+        { q: "How many TRUs and max continuous loads?", a: "3 TRUs\nTRU 1 & 2: 350 Amps\nTRU 3: 225 Amps (125 Amps reserved for FBW)" },
+        { q: "How many batteries? When does BATT DISCHARGING caution appear?", a: "2 × 24V NiCad\nWhen batteries supply power for more than 5 minutes" },
+        { q: "Do you need batteries to start the APU?", a: "Yes – both needed if external power not available\nBATT 1 → APU ECU\nBATT 2 → APU Starter" },
+        { q: "AC BUS priority order for AC BUS 1?", a: "1st: L GEN\n2nd: EXT PWR\n3rd: APU\n4th: R GEN" },
+        { q: "Max continuous load on AC generators?", a: "75 kVA continuous" },
+        { q: "What are BPCUs and EMPC?", a: "BPCUs (2): Bus Power Control Units – manage power in EPC 1 & 2\nEMPC (1): Emergency Power Control Unit – manages EPC 3, RAT auto-deploy logic, RAT overvoltage protection" },
+        { q: "Purpose of CABIN PWR switch?", a: "Deactivates electrical loads from flight compartment outlets and selected cabin systems (galleys, IFE) to isolate smoke sources" },
+        { q: "Purpose of L DISC / R DISC guarded switches?", a: "Disconnect the respective generator shaft from the accessory gearbox\nCannot be reconnected in flight" },
+        { q: "What are the hot buses?", a: "DC EMER bus\nBATT DIR BUS 1\nBATT DIR BUS 2" }
+      ],
+      "Fire Protection": [
+        { q: "Fire detection/extinguishing covers which systems?", a: "Engines, APU, Cargo, Equipment bay (smoke only), Main landing gear (overheat only), Lavatory" },
+        { q: "What powers the fire extinguishers?", a: "BAT DIR BUS 1 and 2" },
+        { q: "How does engine fire/overheat detection work?", a: "Dual-loop, temperature-sensitive elements\nBoth loops must detect fire to trigger warning\nIf one loop fails → FIRE SYSTEM FAULT; remaining loop still monitors" },
+        { q: "Indications of an engine fire?", a: "• Master WARNING illuminates\n• Aural warning\n• FIRE above N1 on EICAS\n• L/R ENG FIRE warning message\n• L/R ENG FIRE switch light illuminates\n• FIRE on ENGINE switch panel" },
+        { q: "What happens when ENG FIRE switch is pressed?", a: "FADEC commands shutdown:\n• Fuel SOV closes\n• Bleed PRSOV closes\n• VFG deactivates\n• Hydraulic SOV closes\n• Fan air valve closes\n• Both engine bottles arm for discharge" },
+        { q: "How many fire bottles for engines? What happens when BTL discharged?", a: "2 bottles total (shared)\nDischarges Halon → amber bar illuminates → ENG BTL 1/2 LO message" },
+        { q: "APU fire on the ground – what happens automatically?", a: "APU shuts down\nExternal APU horn sounds\nFire bottle discharges 10 seconds later" },
+        { q: "True/False: APU fire in flight causes automatic shutdown.", a: "True – APU does NOT auto-shutdown in flight" },
+        { q: "How many smoke detectors per cargo compartment? How many must detect for warning?", a: "4 in each (Class C)\n2 must detect to issue CARGO FIRE warning" },
+        { q: "Cargo fire bottles – types and LRD duration?", a: "High-rate discharge (HRD) and Low-rate discharge (LRD)\nLRD: Non-ETOPS 60 min | ETOPS 180 min + 15 min" },
+        { q: "What agent is used for fire extinguishing?", a: "Halon 1301" },
+        { q: "What indicates fire extinguisher squibs are armed? What does amber bar mean?", a: "Green AVAIL light on Fire BTL switch\nAmber bar: Low bottle pressure or squib failure" },
+        { q: "Lavatory fire protection?", a: "Ceiling smoke detector\nAutomatic fire extinguisher under the sink directed at waste bin" }
+      ],
+      "Flight Controls": [
+        { q: "Name the primary and secondary flight controls.", a: "Primary: Ailerons, Elevator, Rudder\nSecondary: Horizontal stab, 8 multifunction spoilers, 2 ground spoilers, 4 flaps, 8 slats" },
+        { q: "FBW controls all surfaces except ___ and ___. All surfaces hydraulically actuated except ___ which is ___.", a: "Slats and Flaps\nHorizontal stab – electromechanically actuated" },
+        { q: "How many flight control channels / PFCCs? How many active in flight?", a: "3 channels / 3 PFCCs\n1 operates with others in standby" },
+        { q: "If DC power loss, secondary power source for FBW is?", a: "Permanent Magnet Alternator Generators (PMAGs)" },
+        { q: "What are IIMs?", a: "Interceptor Interface Modules – primary interface between cockpit controls and FBW system; carry signals from flight deck to PFCCs" },
+        { q: "If all 3 PFCCs fail, what commands the REUs?", a: "The Interceptor Interface Module (IIM)" },
+        { q: "What are REUs? How many?", a: "Remote Electronics Units – transmit commands from PFCC to hydraulic PCUs that move the surfaces\n10 REUs total" },
+        { q: "What are the two modes of the FBW system?", a: "Normal Mode and Direct Mode" },
+        { q: "What does Normal Mode provide? Requirement?", a: "Envelope protection, structural protection, ground mode in all 3 axes; helps recover if outside limits\nRequires at least 1 PFCC (and min 1 IRS + 2 ADSPs)" },
+        { q: "What is Direct Mode for? What is not available?", a: "Continued safe flight and landing only – auto-selected when Normal cannot be maintained\nNot available: Autopilot, Autoland, envelope/structural protections, speed trim" },
+        { q: "Three types of Direct Mode?", a: "1. PFCC Direct – degraded/missing info to PFCCs\n2. REU Direct – loss of all PFCCs or signals to REUs\n3. AFCU Direct – multiple REU failures or loss of IIMs" },
+        { q: "How do you know you are in AFCU DIRECT mode?", a: "Red DIRECT message on PFDs\nFLT CTRL DIRECT Warning on EICAS" },
+        { q: "What flight controls are available in AFCU DIRECT?", a: "Elevators, Ailerons, Rudder, and HSTAB" },
+        { q: "When does HSTAB trim like a conventional aircraft? When is aileron trim available?", a: "Both in Direct Mode" },
+        { q: "Max bank angle that can be commanded in Normal Mode?", a: "80°" },
+        { q: "How do you lock out the other pilot’s sidestick?", a: "Temporarily: press and hold red AP disconnect on your sidestick\nFully: press sidestick priority switch light on your side" }
+      ],
+      "High Lift": [
+        { q: "What does the high lift system comprise of?", a: "4 leading edge slat panels per wing\n2 Fowler-type flaps per wing" },
+        { q: "How are slats/flaps controlled and actuated?", a: "Electrically controlled, hydraulically actuated via Slat/Flap Electronic Control Units (SFECUs)\nDual motor power drive unit" },
+        { q: "Single motor or hydraulic failure results in ___ speed.", a: "½ speed" },
+        { q: "How many SLAT/FLAP detent positions? Which are gated during retraction?", a: "6 positions (0–5)\nGates at 2 and 4 during retraction" },
+        { q: "When ALTN FLAP switch is in DPLY, flaps/slats are driven to position ___.", a: "3" },
+        { q: "Max altitude with flaps/slats extended? Max height with spoilers manually extended?", a: "20,000 ft\n500 ft AGL" }
+      ],
+      "Landing Gear": [
+        { q: "What controls landing gear extension/retraction? Which HYD system?", a: "Two redundant LGSCUs (Landing Gear and Steering Control Units)\nHydraulic System 1" },
+        { q: "How are the brakes controlled?", a: "Electronically" },
+        { q: "What keeps the MLG up and locked?", a: "Electrohydraulic uplock mechanism" },
+        { q: "What happens when ALTN GEAR switch selected DN?", a: "Uplocks released electrically\nHydraulic pressure released\nGear extends via gravity" },
+        { q: "Every ___ flight hours, an alternate gear extension is performed by the system during normal extension.", a: "550 flight hours" },
+        { q: "Which HYD system controls nose wheel steering? Max tiller deflection?", a: "HYD System 2\n80° either side of center (low-speed taxi)" }
+      ],
+      "Ice & Rain": [
+        { q: "Which slats are anti-iced with engine bleed air?", a: "3 outboard slats (2, 3, and 4)" },
+        { q: "What uses electrical power for ice and rain protection?", a: "Ice detection probes\nAir data probes and anti-icing sensors\nWindshield heat and side window heat\nWindshield wipers" },
+        { q: "How many ice detectors?", a: "2 (one on each side of the nose)" }
+      ],
+      "Oxygen / Emer Eq": [
+        { q: "Crew O2 selector positions: N, 100%, Emergency – what do they mean?", a: "N (Normal): Mixture of cabin air and oxygen\n100%: Pure oxygen\nEmergency: 100% oxygen at positive pressure" },
+        { q: "When cabin altitude is ___ or higher, oxygen is 100% regardless of selector.", a: "FL350" },
+        { q: "When do passenger O2 masks auto-deploy? How long do they last?", a: "Cabin altitude above 14,500 ft\n13 minutes" },
+        { q: "How long does PBE provide protection?", a: "15 minutes" },
+        { q: "How many fire extinguishers? Locations? Classes?", a: "4 total: 1 flight deck, 1 forward galley, 2 aft\nClass A (combustible), B (flammable liquids), C (electrical)" },
+        { q: "How many megaphones? Locations?", a: "2: One forward galley, one aft" },
+        { q: "Alternate manual method to deploy passenger oxygen masks?", a: "PAX OXY switch on the cockpit overhead panel" },
+        { q: "Where are the four PBEs located?", a: "1 flight deck, 2 FWD galley, 1 AFT galley" }
+      ],
+      "Powerplant": [
+        { q: "What is Automatic Power Reserve (APR)?", a: "Automatically increases thrust to the next available power setting in the event of an engine failure" },
+        { q: "Three CLB THRUST modes?", a: "CLB: max thrust\nCLB-1: 5% reduction\nCLB-2: 10% reduction" },
+        { q: "TO thrust ratings (PW1524G) – TO, TO-1, TO-2, TO-3?", a: "TO (MTO): 23,300 lbf\nTO-1: 21,000 lbf\nTO-2: 18,900 lbf\nTO-3: 17,000 lbf\n(Note: Reduced thrust/FLEX from derated TO is prohibited)" },
+        { q: "What are all the engine thrust modes?", a: "TO, TO-1, TO-2, TO-3\nCLB, CLB-1, CLB-2\nMCT\nGA" }
+      ]
+    };
+
+    let currentSection = "AFCS";
+    let cards = decks[currentSection];
+    let currentIndex = 0;
+    let isFlipped = false;
+    let order = [];
+
+    const cardEl = document.getElementById("card");
+    const questionEl = document.getElementById("question");
+    const answerEl = document.getElementById("answer");
+    const currentEl = document.getElementById("current");
+    const totalEl = document.getElementById("total");
+    const sectionLabel = document.getElementById("sectionLabel");
+    const sectionMenu = document.getElementById("sectionMenu");
+    const themeToggle = document.getElementById("themeToggle");
+
+    // Build menu
+    Object.keys(decks).forEach(name => {
+      const btn = document.createElement("button");
+      btn.className = "section-btn" + (name === currentSection ? " active" : "");
+      btn.textContent = name + " (" + decks[name].length + ")";
+      btn.onclick = () => selectSection(name);
+      sectionMenu.appendChild(btn);
+    });
+
+    function toggleMenu() {
+      sectionMenu.classList.toggle("open");
+    }
+
+    function selectSection(name) {
+      currentSection = name;
+      cards = decks[name];
+      order = [...Array(cards.length).keys()];
+      currentIndex = 0;
+      sectionLabel.textContent = name;
+      document.querySelectorAll(".section-btn").forEach(b => {
+        b.classList.toggle("active", b.textContent.startsWith(name));
+      });
+      sectionMenu.classList.remove("open");
+      showCard();
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      themeToggle.textContent = theme === "dark" ? "☀️" : "🌙";
+      localStorage.setItem("a220-sys-theme", theme);
+    }
+    const saved = localStorage.getItem("a220-sys-theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    setTheme(saved);
+    themeToggle.onclick = (e) => {
+      e.stopPropagation();
+      setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    };
+
+    function showCard() {
+      const idx = order[currentIndex];
+      questionEl.textContent = cards[idx].q;
+      answerEl.textContent = cards[idx].a;
+      currentEl.textContent = currentIndex + 1;
+      totalEl.textContent = cards.length;
+      isFlipped = false;
+      cardEl.classList.remove("flipped");
+    }
+
+    function flipCard() {
+      isFlipped = !isFlipped;
+      cardEl.classList.toggle("flipped", isFlipped);
+    }
+    function nextCard(e) { if (e) e.stopPropagation(); currentIndex = (currentIndex + 1) % cards.length; showCard(); }
+    function prevCard(e) { if (e) e.stopPropagation(); currentIndex = (currentIndex - 1 + cards.length) % cards.length; showCard(); }
+    function shuffleCards(e) {
+      if (e) e.stopPropagation();
+      for (let i = order.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [order[i], order[j]] = [order[j], order[i]];
+      }
+      currentIndex = 0; showCard();
+    }
+    function resetCards(e) {
+      if (e) e.stopPropagation();
+      order = [...Array(cards.length).keys()];
+      currentIndex = 0; showCard();
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") { e.preventDefault(); nextCard(); }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); prevCard(); }
+      else if (e.key === " " || e.key === "f" || e.key === "F") { e.preventDefault(); flipCard(); }
+    });
+
+    // PWA install prompt
+    let deferredPrompt;
+    const installBanner = document.getElementById("installBanner");
+    const installBtn = document.getElementById("installBtn");
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBanner.style.display = "block";
+    });
+    if (installBtn) {
+      installBtn.addEventListener("click", async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installBanner.style.display = "none";
+      });
+    }
+
+    // Register service worker for offline
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    }
+
+    order = [...Array(cards.length).keys()];
+    showCard();
+  </script>
+</body>
+</html>
